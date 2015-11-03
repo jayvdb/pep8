@@ -29,6 +29,7 @@ class Pep8TestCase(unittest.TestCase):
         fail_s, done_s = selftest(self._style.options)
         self.assertTrue(done_s, msg='tests not found')
         self.assertFalse(fail_s, msg='%s failure(s)' % fail_s)
+        print(fail_s)
 
     def test_checkers_testsuite(self):
         init_tests(self._style)

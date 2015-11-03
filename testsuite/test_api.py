@@ -181,7 +181,7 @@ class APITestCase(unittest.TestCase):
         self.assertEqual(options.select, ())
         self.assertEqual(
             options.ignore,
-            ('E121', 'E123', 'E126', 'E226', 'E24', 'E704')
+            ('E121', 'E123', 'E126', 'E226', 'E24', 'E305', 'E306', 'E704')
         )
 
         options = parse_argv('--doctest').options

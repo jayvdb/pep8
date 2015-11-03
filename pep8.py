@@ -65,7 +65,7 @@ except ImportError:
 __version__ = '1.6.3a0'
 
 DEFAULT_EXCLUDE = '.svn,CVS,.bzr,.hg,.git,__pycache__,.tox'
-DEFAULT_IGNORE = 'E121,E123,E126,E226,E24,E704'
+DEFAULT_IGNORE = 'E121,E123,E126,E226,E24,E305,E306,E704'
 try:
     if sys.platform == 'win32':
         USER_CONFIG = os.path.expanduser(r'~\.pep8')
@@ -234,7 +234,7 @@ def maximum_line_length(physical_line, max_line_length, multiline):
 
 
 def blank_lines(logical_line, blank_lines, indent_level, line_number,
-                blank_before, previous_logical, previous_indent_level):
+                blank_before, previous_logical, previous_indent_level, lines):
     r"""Separate top-level function and class definitions with two blank lines.
 
     Method definitions inside a class are separated by a single blank line.
@@ -254,8 +254,6 @@ def blank_lines(logical_line, blank_lines, indent_level, line_number,
     E303: def a():\n\n\n\n    pass
     E304: @decorator\n\ndef a():\n    pass
     """
-    if line_number < 3 and not previous_logical:
-        return  # Don't expect blank lines before the first line
     if previous_logical.startswith('@'):
         if blank_lines:
             yield 0, "E304 blank lines found after function decorator"
@@ -267,7 +265,15 @@ def blank_lines(logical_line, blank_lines, indent_level, line_number,
                     DOCSTRING_REGEX.match(previous_logical)):
                 yield 0, "E301 expected 1 blank line, found 0"
         elif blank_before != 2:
-            yield 0, "E302 expected 2 blank lines, found %d" % blank_before
+            if not previous_logical:
+                if all(line.startswith('#') for line in lines):
+                    yield (0,
+                           "E305 expected 2 blank lines after "
+                           "comments at top of module")
+                else:
+                    yield 0, "E306 expected 2 blank lines at top of module"
+            else:
+                yield 0, "E302 expected 2 blank lines, found %d" % blank_before
 
 
 def extraneous_whitespace(logical_line):
